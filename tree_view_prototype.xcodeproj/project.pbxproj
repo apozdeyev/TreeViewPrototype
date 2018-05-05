@@ -14,6 +14,7 @@
 		F2A1D5DD208F407500E70B4A /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A1D5DC208F407500E70B4A /* TableViewController.swift */; };
 		F2A1D5E2208F40AE00E70B4A /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A1D5E0208F40AE00E70B4A /* TableViewCell.swift */; };
 		F2A1D5E3208F40AE00E70B4A /* TableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2A1D5E1208F40AE00E70B4A /* TableViewCell.xib */; };
+		F2EECA58209B000F001C24E8 /* TableViewWithIntrinsicSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EECA57209B000F001C24E8 /* TableViewWithIntrinsicSize.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		F2A1D5DC208F407500E70B4A /* TableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewController.swift; sourceTree = "<group>"; };
 		F2A1D5E0208F40AE00E70B4A /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		F2A1D5E1208F40AE00E70B4A /* TableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TableViewCell.xib; sourceTree = "<group>"; };
+		F2EECA57209B000F001C24E8 /* TableViewWithIntrinsicSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewWithIntrinsicSize.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				F2A1D5DC208F407500E70B4A /* TableViewController.swift */,
 				F2A1D5E0208F40AE00E70B4A /* TableViewCell.swift */,
 				F2A1D5E1208F40AE00E70B4A /* TableViewCell.xib */,
+				F2EECA57209B000F001C24E8 /* TableViewWithIntrinsicSize.swift */,
 			);
 			path = tree_view_prototype;
 			sourceTree = "<group>";
@@ -143,6 +146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2A1D5E2208F40AE00E70B4A /* TableViewCell.swift in Sources */,
+				F2EECA58209B000F001C24E8 /* TableViewWithIntrinsicSize.swift in Sources */,
 				F2A1D5DD208F407500E70B4A /* TableViewController.swift in Sources */,
 				F2A1D5CB208F3F2200E70B4A /* AppDelegate.swift in Sources */,
 			);

@@ -15,6 +15,23 @@ protocol DynamicCellController {
 
 class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellController {
 	
+	static var instancesCount = 0
+	
+	public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+		super.init(style: style, reuseIdentifier:reuseIdentifier)
+		incrementAndShowInstancesCount()
+	}
+	
+	public required init?(coder aDecoder: NSCoder) {
+		super.init(coder: aDecoder)
+		incrementAndShowInstancesCount()
+	}
+	
+	public func incrementAndShowInstancesCount() {
+		TableViewCell.instancesCount += 1
+		print("instancesCount: \(TableViewCell.instancesCount)")
+	}
+	
 	public var parentTableView: UITableView?
 	
 	override func awakeFromNib() {
@@ -24,43 +41,9 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		tableView.insetsLayoutMarginsFromSafeArea = false
 	}
 	
-	override func layoutSubviews() {
-//		let oldHeight = frame.size.height
-//		let oldTableContentHeight = tableView.contentSize.height
-		
-		let oldTableHeight = tableView.frame.size.height
-		
-		super.layoutSubviews()
-		
-//		let newHeight = frame.size.height
-//		let newTableContentHeight = tableView.contentSize.height
-		
-//		if (oldHeight != newHeight) {
-//			updateParentContainer()
-//		}
-		
-		let tableContentHeight = tableView.contentSize.height
-		let tableHeight = tableView.frame.size.height
-		var newTableHeight:CGFloat = 0
-		if (tableContentHeight != tableHeight) {
-			if (collapsed || num == 0) {
-				newTableHeight = 0
-			} else {
-				newTableHeight = tableView.contentSize.height
-			}
-		}
-
-		if (abs(newTableHeight - tableViewHeight.constant) > 1) {
-			tableViewHeight.constant = newTableHeight
-//			setNeedsUpdateConstraints()
-//			setNeedsLayout()
-//			updateParentContainer()
-		}
-		
-		updateParentContainer()
-	}
-	
 	func onCellHeightChanged(cell: UITableViewCell) {
+		tableView.invalidateIntrinsicContentSize()
+		
 		tableView.beginUpdates()
 		tableView.endUpdates()
 		
@@ -68,14 +51,6 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	}
 	
 	@objc func updateParentContainer() {
-		// TODO:???
-//		tableViewHeight.constant = tableView.contentSize.height
-		if (collapsed || num == 0) {
-			tableViewHeight.constant = 0
-		} else {
-			tableViewHeight.constant = tableView.contentSize.height
-		}
-		
 		if (dynamicCellController != nil) {
 			dynamicCellController?.onCellHeightChanged(cell: self)
 		}
@@ -96,27 +71,20 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	}
 	public var collapsed: Bool = true {
 		didSet {
-			UIView.animate(withDuration: 0.3) {
-				self.invalidateTableHeight()
-			}
+			self.invalidateTableHeight()
 		}
 	}
 	
 	fileprivate func invalidateTableHeight() {
-		if (collapsed || num == 0) {
-			tableViewHeight.constant = 0
-		} else {
-			tableViewHeight.constant = tableView.contentSize.height
-		}
+		tableView.invalidateIntrinsicContentSize()
 		
-		print("new tableViewHeight(\(title!.text!)): \(tableView.contentSize.height)");
+		let tableCollapsed = (collapsed || num == 0)
+		tableView.isHidden = tableCollapsed
 		
-		layoutIfNeeded()
+		print("new tableViewHeight(\(title!.text!), \(self.tableView.tag): \(tableView.contentSize.height)");
+		
 		onHeightChanged()
 		updateButtonTitle()
-		
-//		parentTableView?.beginUpdates()
-//		parentTableView?.endUpdates()
 	}
 	
 	private func updateButtonTitle() {
@@ -128,15 +96,12 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	}
 	
 	@IBAction func onBtn(_ sender: Any) {
-//		tableView.invalidateHeight()
 		collapsed = !collapsed
 	}
 	
 	@IBOutlet var title: UILabel!
 	@IBOutlet var tableView: UITableView!
 	@IBOutlet var button: UIButton!
-	
-	@IBOutlet var tableViewHeight: NSLayoutConstraint!
 	
 	public func collapse() {
 		collapsed = true
@@ -169,34 +134,25 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		
+		print("cellForRowAt: \(indexPath.row)");
+		
 		let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! TableViewCell
 		
-		cell.num = (num % 2 == 0 && depth < 2) ? 2 : 0
+		cell.num = (num % 2 == 0 && depth < 20) ? 10 : 0
 		cell.title.text = "\(title.text!)_\(indexPath.row)"
 		cell.dynamicCellController = self
 		cell.depth = depth + 1
 		cell.parentTableView = tableView
+		cell.tableView.tag = self.tag * 10 + indexPath.row
 		
 		return cell
 	}
+	
+	public override func prepareForReuse() {
+		super.prepareForReuse()
+		
+		print("prepareForReuse")
+	}
 }
 
-
-//extension UITableView {
-//	// TODO: fix, not work - it needs to know table height when it's height is zero, may be use not table view, but we need reused cells.
-//	public func invalidateHeight() {
-//		self.beginUpdates()
-//		self.endUpdates()
-//
-//		let rowsCount = numberOfRows(inSection: 0)
-//		for i in 0...rowsCount {
-//			let cell = cellForRow(at: IndexPath.init(row: i, section: 0))
-//			let t = cell?.frame
-//		}
-//
-//		layoutIfNeeded()
-//		let rowsCount2 = numberOfRows(inSection: 0)
-//		layoutSubviews()
-//		let rowsCount3 = numberOfRows(inSection: 0)
-//	}
-//}

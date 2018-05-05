@@ -35,7 +35,7 @@ class TableViewController: UITableViewController, DynamicCellController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 3
+        return 3000
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -45,10 +45,10 @@ class TableViewController: UITableViewController, DynamicCellController {
 		cell.title.text = "\(indexPath.row)"
 		cell.dynamicCellController = self
 		cell.parentTableView = tableView
+		cell.tableView.tag = indexPath.row
 		
         // Configure the cell...
 
         return cell
     }
-
 }
