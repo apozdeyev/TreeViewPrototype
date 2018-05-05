@@ -8,14 +8,28 @@
 
 import UIKit
 
+
+
 protocol DynamicCellController {
 	func onCellHeightChanged(cell: UITableViewCell)
 }
 
 
-class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellController {
+class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellController,  UIScrollViewDelegate {
+	
+	public var scrollingEventsNotifier: ScrollingEventsNotifier?  =  nil
+
+	@IBOutlet var tableViewContainerHeight: NSLayoutConstraint!
+	
+	@IBOutlet var tableViewHeight: NSLayoutConstraint!
+	
+	@IBOutlet var tableViewTop: NSLayoutConstraint!
+	
+	@IBOutlet var tablewViewContainer: UIView!
 	
 	static var instancesCount = 0
+	
+	public var indexPath: IndexPath?
 	
 	public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier:reuseIdentifier)
@@ -41,11 +55,20 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		tableView.insetsLayoutMarginsFromSafeArea = false
 	}
 	
-	func onCellHeightChanged(cell: UITableViewCell) {
-		tableView.invalidateIntrinsicContentSize()
+	func invalidateTableViewHeight() {
+		let tableCollapsed = (collapsed || num == 0)
+		tableViewContainerHeight.constant = (tableCollapsed) ? 0 : tableView.contentSize.height
+		tableViewHeight.constant = (tableCollapsed) ? 0 : min(tableView.contentSize.height, UIScreen.main.bounds.height)
 		
+		layoutIfNeeded()
+	}
+	
+	func onCellHeightChanged(cell: UITableViewCell) {
+//		tableView.invalidateIntrinsicContentSize()
 		tableView.beginUpdates()
 		tableView.endUpdates()
+		
+		invalidateTableViewHeight()
 		
 		updateParentContainer()
 	}
@@ -71,17 +94,22 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	}
 	public var collapsed: Bool = true {
 		didSet {
+			// TODO: try to make nice animation
+//			UIView.animate(withDuration: 0.3) {
+//				self.invalidateTableHeight()
+//			}
 			self.invalidateTableHeight()
 		}
 	}
 	
 	fileprivate func invalidateTableHeight() {
-		tableView.invalidateIntrinsicContentSize()
+//		tableView.invalidateIntrinsicContentSize()
 		
-		let tableCollapsed = (collapsed || num == 0)
-		tableView.isHidden = tableCollapsed
+//		let tableCollapsed = (collapsed || num == 0)
+//		tableView.isHidden = tableCollapsed
+		invalidateTableViewHeight()
 		
-		print("new tableViewHeight(\(title!.text!), \(self.tableView.tag): \(tableView.contentSize.height)");
+//		print("new tableViewHeight(\(title!.text!), \(self.tableView.tag): \(tableView.contentSize.height)");
 		
 		onHeightChanged()
 		updateButtonTitle()
@@ -135,7 +163,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		
-		print("cellForRowAt: \(indexPath.row)");
+//		print("cellForRowAt: \(indexPath.row)");
 		
 		let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! TableViewCell
 		
@@ -145,6 +173,9 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		cell.depth = depth + 1
 		cell.parentTableView = tableView
 		cell.tableView.tag = self.tag * 10 + indexPath.row
+		cell.scrollingEventsNotifier = scrollingEventsNotifier
+		cell.indexPath = indexPath
+		scrollingEventsNotifier!.addListener(listener: cell)
 		
 		return cell
 	}
@@ -152,7 +183,38 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	public override func prepareForReuse() {
 		super.prepareForReuse()
 		
-		print("prepareForReuse")
+		// TODO:? with a lot items cells are reused incorrectly at top level.
+		
+//		print("prepareForReuse")
+	}
+	
+	public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		
+		// set table position and offset
+		
+		let cellPositionRelativeToRoot = scrollingEventsNotifier!.getRootScrollView().convert(CGPoint(x: 0, y: 0), from: self)
+		
+		let bottonPosition = (tableViewContainerHeight.constant - tableViewHeight.constant)
+		let relativePosition = scrollView.contentOffset.y - cellPositionRelativeToRoot.y - tablewViewContainer.frame.origin.y
+		let newTableViewTop = max(0, min(bottonPosition, relativePosition))
+		
+//		if  (depth == 0 && indexPath?.row == 1) {
+//			print("BEGIN")
+//
+//			print("root height: \(scrollingEventsNotifier!.getRootScrollView().bounds.height)")
+//			print("tableViewContainerHeight: \(tableViewContainerHeight.constant)")
+//			print("tableViewHeight: \(tableViewHeight.constant)")
+//			print("tablewViewContainer.y: \(tablewViewContainer.frame.origin.y)")
+//			print("scrollView.contentOffset: \(scrollView.contentOffset.y)")
+//			print("cellPositionRelativeToRoot.y: \(cellPositionRelativeToRoot.y)")
+//			print("bottonPosition: \(bottonPosition)")
+//			print("relativePosition: \(relativePosition)")
+//
+//			print("END")
+//		}
+		
+		tableViewTop.constant = newTableViewTop
+		tableView.contentOffset = CGPoint(x: 0, y: newTableViewTop)
 	}
 }
 

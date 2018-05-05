@@ -8,7 +8,28 @@
 
 import UIKit
 
-class TableViewController: UITableViewController, DynamicCellController {
+protocol ScrollingEventsNotifier {
+	func addListener(listener: UIScrollViewDelegate)
+	
+	func  getRootScrollView() -> UIScrollView
+}
+
+class TableViewController: UITableViewController, DynamicCellController, ScrollingEventsNotifier {
+	
+	var scrollingEventsListeners = [UIScrollViewDelegate]()
+	
+	func addListener(listener: UIScrollViewDelegate) {
+		if !scrollingEventsListeners.contains(where: { (iter) -> Bool in
+			listener.isEqual(iter)
+		}) {
+			scrollingEventsListeners.append(listener)
+		}
+	}
+	
+	func  getRootScrollView() -> UIScrollView {
+		return tableView
+	}
+	
 	func onCellHeightChanged(cell: UITableViewCell) {
 		tableView.beginUpdates()
 		tableView.endUpdates()
@@ -46,9 +67,17 @@ class TableViewController: UITableViewController, DynamicCellController {
 		cell.dynamicCellController = self
 		cell.parentTableView = tableView
 		cell.tableView.tag = indexPath.row
+		cell.scrollingEventsNotifier = self
+		cell.indexPath = indexPath
+		addListener(listener: cell)
 		
         // Configure the cell...
 
         return cell
     }
+	
+	public override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		scrollingEventsListeners.forEach {		$0.scrollViewDidScroll!(scrollView)
+		}
+	}
 }

@@ -10,28 +10,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tree_view_prototype/TableViewCell.swift"
-            timestampString = "547061203.85532"
+            timestampString = "547219571.403"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "21"
-            endingLineNumber = "21"
-            landmarkName = "init(style:reuseIdentifier:)"
+            startingLineNumber = "109"
+            endingLineNumber = "109"
+            landmarkName = "invalidateTableHeight()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tree_view_prototype/TableViewCell.swift"
-            timestampString = "547061203.85543"
+            timestampString = "547219571.403834"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
-            landmarkName = "init(coder:)"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
+            landmarkName = "onCellHeightChanged(cell:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

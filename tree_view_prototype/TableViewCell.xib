@@ -45,13 +45,28 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" contentViewInsetsToSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t83-f5-a5u" customClass="TableViewWithIntrinsicSize" customModule="tree_view_prototype" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z8d-1T-lfF">
                                 <rect key="frame" x="0.0" y="43.5" width="320" height="0.0"/>
-                                <color key="backgroundColor" red="0.36971814419999999" green="1" blue="0.20117083860000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="KGk-i7-Jjw" id="l4B-Vf-1cD"/>
-                                </connections>
-                            </tableView>
+                                <subviews>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" contentViewInsetsToSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t83-f5-a5u" customClass="TableViewWithIntrinsicSize" customModule="tree_view_prototype" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="0.0"/>
+                                        <color key="backgroundColor" red="0.36971814419999999" green="1" blue="0.20117083860000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" id="wOL-Kv-DSG"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="dataSource" destination="KGk-i7-Jjw" id="l4B-Vf-1cD"/>
+                                        </connections>
+                                    </tableView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" id="4KZ-KI-O1V"/>
+                                    <constraint firstItem="t83-f5-a5u" firstAttribute="leading" secondItem="Z8d-1T-lfF" secondAttribute="leading" id="Lol-et-qt9"/>
+                                    <constraint firstAttribute="trailing" secondItem="t83-f5-a5u" secondAttribute="trailing" id="XDJ-hP-bPD"/>
+                                    <constraint firstItem="t83-f5-a5u" firstAttribute="top" secondItem="Z8d-1T-lfF" secondAttribute="top" id="wbi-ds-Fca"/>
+                                </constraints>
+                            </view>
                         </subviews>
                     </stackView>
                 </subviews>
@@ -66,6 +81,10 @@
             <connections>
                 <outlet property="button" destination="0Eh-lD-O2c" id="REv-5n-mZF"/>
                 <outlet property="tableView" destination="t83-f5-a5u" id="BA7-Sc-U6X"/>
+                <outlet property="tableViewContainerHeight" destination="4KZ-KI-O1V" id="MHT-Ev-uRJ"/>
+                <outlet property="tableViewHeight" destination="wOL-Kv-DSG" id="6jA-8B-P4W"/>
+                <outlet property="tableViewTop" destination="wbi-ds-Fca" id="XGt-7h-g1H"/>
+                <outlet property="tablewViewContainer" destination="Z8d-1T-lfF" id="RlY-XC-tx7"/>
                 <outlet property="title" destination="bCH-mn-ecv" id="IZy-kY-ZyZ"/>
             </connections>
         </tableViewCell>
