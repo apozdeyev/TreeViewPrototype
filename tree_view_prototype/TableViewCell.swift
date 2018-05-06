@@ -8,8 +8,7 @@
 
 import UIKit
 
-
-
+// TODO: fix broken  layout at orientation changing
 protocol DynamicCellController {
 	func onCellHeightChanged(cell: UITableViewCell)
 }
@@ -18,69 +17,20 @@ protocol DynamicCellController {
 class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellController,  UIScrollViewDelegate {
 	
 	public var scrollingEventsNotifier: ScrollingEventsNotifier?  =  nil
-
-	@IBOutlet var tableViewContainerHeight: NSLayoutConstraint!
-	
-	@IBOutlet var tableViewHeight: NSLayoutConstraint!
-	
-	@IBOutlet var tableViewTop: NSLayoutConstraint!
-	
-	@IBOutlet var tablewViewContainer: UIView!
+	public var parentTableView: UITableView?
+	public var dynamicCellController: DynamicCellController?
+	public var indexPath: IndexPath?
 	
 	static var instancesCount = 0
 	
-	public var indexPath: IndexPath?
+	@IBOutlet var tableViewContainerHeight: NSLayoutConstraint!
+	@IBOutlet var tableViewHeight: NSLayoutConstraint!
+	@IBOutlet var tableViewTop: NSLayoutConstraint!
+	@IBOutlet var tableViewContainer: UIView!
+	@IBOutlet var title: UILabel!
+	@IBOutlet var tableView: UITableView!
+	@IBOutlet var button: UIButton!
 	
-	public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-		super.init(style: style, reuseIdentifier:reuseIdentifier)
-		incrementAndShowInstancesCount()
-	}
-	
-	public required init?(coder aDecoder: NSCoder) {
-		super.init(coder: aDecoder)
-		incrementAndShowInstancesCount()
-	}
-	
-	public func incrementAndShowInstancesCount() {
-		TableViewCell.instancesCount += 1
-		print("instancesCount: \(TableViewCell.instancesCount)")
-	}
-	
-	public var parentTableView: UITableView?
-	
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		
-		tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "reuseIdentifier")
-		tableView.insetsLayoutMarginsFromSafeArea = false
-	}
-	
-	func invalidateTableViewHeight() {
-		let tableCollapsed = (collapsed || num == 0)
-		tableViewContainerHeight.constant = (tableCollapsed) ? 0 : tableView.contentSize.height
-		tableViewHeight.constant = (tableCollapsed) ? 0 : min(tableView.contentSize.height, UIScreen.main.bounds.height)
-		
-		layoutIfNeeded()
-	}
-	
-	func onCellHeightChanged(cell: UITableViewCell) {
-//		tableView.invalidateIntrinsicContentSize()
-		tableView.beginUpdates()
-		tableView.endUpdates()
-		
-		invalidateTableViewHeight()
-		
-		updateParentContainer()
-	}
-	
-	@objc func updateParentContainer() {
-		if (dynamicCellController != nil) {
-			dynamicCellController?.onCellHeightChanged(cell: self)
-		}
-	}
-	
-	public var dynamicCellController: DynamicCellController?
-
 	public var depth: Int = 0 {
 		didSet {
 			self.contentView.layoutMargins = UIEdgeInsetsMake(0, CGFloat(10 + 10 * depth), 0, 0);
@@ -92,30 +42,65 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 			tableView.reloadData()
 		}
 	}
-	public var collapsed: Bool = true {
+
+	fileprivate var collapsed: Bool = true {
 		didSet {
-			// TODO: try to make nice animation
-//			UIView.animate(withDuration: 0.3) {
-//				self.invalidateTableHeight()
-//			}
-			self.invalidateTableHeight()
+			invalidateTableViewContainerVisibility()
+			invalidateTableViewHeight()
+			updateButtonTitle()
+			updateParentContainer()
 		}
 	}
 	
-	fileprivate func invalidateTableHeight() {
-//		tableView.invalidateIntrinsicContentSize()
-		
-//		let tableCollapsed = (collapsed || num == 0)
-//		tableView.isHidden = tableCollapsed
-		invalidateTableViewHeight()
-		
-//		print("new tableViewHeight(\(title!.text!), \(self.tableView.tag): \(tableView.contentSize.height)");
-		
-		onHeightChanged()
-		updateButtonTitle()
+	public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+		super.init(style: style, reuseIdentifier:reuseIdentifier)
+		incrementAndShowInstancesCount()
 	}
 	
-	private func updateButtonTitle() {
+	public required init?(coder aDecoder: NSCoder) {
+		super.init(coder: aDecoder)
+		incrementAndShowInstancesCount()
+	}
+	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		
+		tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "reuseIdentifier")
+		tableView.insetsLayoutMarginsFromSafeArea = false
+	}
+	
+	public override func prepareForReuse() {
+		super.prepareForReuse()
+		
+		// TODO:? with a lot items cells are reused incorrectly at top level.
+		
+		//		print("prepareForReuse")
+	}
+	
+	fileprivate func incrementAndShowInstancesCount() {
+		TableViewCell.instancesCount += 1
+		print("instancesCount: \(TableViewCell.instancesCount)")
+	}
+
+	fileprivate func invalidateTableViewHeight() {
+		tableViewContainerHeight.constant = tableView.contentSize.height
+		tableViewHeight.constant = min(tableView.contentSize.height, UIScreen.main.bounds.height)
+		
+		layoutIfNeeded()
+	}
+	
+	fileprivate func updateParentContainer() {
+		if (dynamicCellController != nil) {
+			dynamicCellController?.onCellHeightChanged(cell: self)
+		}
+	}
+	
+	fileprivate func invalidateTableViewContainerVisibility() {
+		let tableCollapsed = (collapsed || num == 0)
+		tableViewContainer.isHidden = tableCollapsed
+	}
+
+	fileprivate func updateButtonTitle() {
 		if (num == 0) {
 			button.setTitle("", for: .normal)
 		} else {
@@ -126,38 +111,24 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	@IBAction func onBtn(_ sender: Any) {
 		collapsed = !collapsed
 	}
-	
-	@IBOutlet var title: UILabel!
-	@IBOutlet var tableView: UITableView!
-	@IBOutlet var button: UIButton!
-	
-	public func collapse() {
-		collapsed = true
-	}
-	
-	public func expand() {
-		collapsed = false
-	}
-	
-	private func onHeightChanged() {
-		if (dynamicCellController != nil) {
-			dynamicCellController?.onCellHeightChanged(cell: self)
-		}
-	}
-	
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
-    }
-	
+	// MARK: DynamicCellController
+
+	func onCellHeightChanged(cell: UITableViewCell) {
+		tableView.beginUpdates()
+		tableView.endUpdates()
+
+		invalidateTableViewHeight()
+		updateParentContainer()
+	}
+
+	// MARK: UITableViewDataSource
+
 	func numberOfSections(in tableView: UITableView) -> Int {
-		// #warning Incomplete implementation, return the number of sections
 		return 1
 	}
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		// #warning Incomplete implementation, return the number of rows
 		return num
 	}
 	
@@ -179,15 +150,8 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		
 		return cell
 	}
-	
-	public override func prepareForReuse() {
-		super.prepareForReuse()
-		
-		// TODO:? with a lot items cells are reused incorrectly at top level.
-		
-//		print("prepareForReuse")
-	}
-	
+
+	// MARK: UIScrollViewDelegate
 	public func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		
 		// set table position and offset
@@ -195,7 +159,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		let cellPositionRelativeToRoot = scrollingEventsNotifier!.getRootScrollView().convert(CGPoint(x: 0, y: 0), from: self)
 		
 		let bottonPosition = (tableViewContainerHeight.constant - tableViewHeight.constant)
-		let relativePosition = scrollView.contentOffset.y - cellPositionRelativeToRoot.y - tablewViewContainer.frame.origin.y
+		let relativePosition = scrollView.contentOffset.y - cellPositionRelativeToRoot.y - tableViewContainer.frame.origin.y
 		let newTableViewTop = max(0, min(bottonPosition, relativePosition))
 		
 //		if  (depth == 0 && indexPath?.row == 1) {

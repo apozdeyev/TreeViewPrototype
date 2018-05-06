@@ -11,10 +11,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="TableViewCell" customModule="tree_view_prototype" customModuleProvider="target">
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="TableViewCell" customModule="tree_view_prototype" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="top" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+            <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="top" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
@@ -45,37 +45,35 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z8d-1T-lfF">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z8d-1T-lfF">
                                 <rect key="frame" x="0.0" y="43.5" width="320" height="0.0"/>
-                                <subviews>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" contentViewInsetsToSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t83-f5-a5u" customClass="TableViewWithIntrinsicSize" customModule="tree_view_prototype" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="0.0"/>
-                                        <color key="backgroundColor" red="0.36971814419999999" green="1" blue="0.20117083860000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" id="wOL-Kv-DSG"/>
-                                        </constraints>
-                                        <connections>
-                                            <outlet property="dataSource" destination="KGk-i7-Jjw" id="l4B-Vf-1cD"/>
-                                        </connections>
-                                    </tableView>
-                                </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="4KZ-KI-O1V"/>
-                                    <constraint firstItem="t83-f5-a5u" firstAttribute="leading" secondItem="Z8d-1T-lfF" secondAttribute="leading" id="Lol-et-qt9"/>
-                                    <constraint firstAttribute="trailing" secondItem="t83-f5-a5u" secondAttribute="trailing" id="XDJ-hP-bPD"/>
-                                    <constraint firstItem="t83-f5-a5u" firstAttribute="top" secondItem="Z8d-1T-lfF" secondAttribute="top" id="wbi-ds-Fca"/>
                                 </constraints>
                             </view>
                         </subviews>
                     </stackView>
+                    <tableView contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" contentViewInsetsToSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t83-f5-a5u" customClass="TableViewWithIntrinsicSize" customModule="tree_view_prototype" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="43.5" width="320" height="0.0"/>
+                        <color key="backgroundColor" red="0.36971814419999999" green="1" blue="0.20117083860000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstAttribute="height" id="wOL-Kv-DSG"/>
+                        </constraints>
+                        <connections>
+                            <outlet property="dataSource" destination="KGk-i7-Jjw" id="l4B-Vf-1cD"/>
+                        </connections>
+                    </tableView>
                 </subviews>
                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="KwG-Cg-A1r" secondAttribute="trailing" id="9LD-SB-gPi"/>
+                    <constraint firstItem="t83-f5-a5u" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="AdD-pt-XkE"/>
                     <constraint firstItem="KwG-Cg-A1r" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="EvR-FM-VhY"/>
                     <constraint firstItem="KwG-Cg-A1r" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="FTc-H0-Ygr"/>
                     <constraint firstAttribute="bottom" secondItem="KwG-Cg-A1r" secondAttribute="bottom" priority="999" id="V7j-qG-NA2"/>
+                    <constraint firstAttribute="trailing" secondItem="t83-f5-a5u" secondAttribute="trailing" id="aeU-34-Pgg"/>
+                    <constraint firstItem="lVo-2a-cMT" firstAttribute="bottom" secondItem="t83-f5-a5u" secondAttribute="top" id="bmd-aa-5Bv"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
@@ -83,8 +81,8 @@
                 <outlet property="tableView" destination="t83-f5-a5u" id="BA7-Sc-U6X"/>
                 <outlet property="tableViewContainerHeight" destination="4KZ-KI-O1V" id="MHT-Ev-uRJ"/>
                 <outlet property="tableViewHeight" destination="wOL-Kv-DSG" id="6jA-8B-P4W"/>
-                <outlet property="tableViewTop" destination="wbi-ds-Fca" id="XGt-7h-g1H"/>
-                <outlet property="tablewViewContainer" destination="Z8d-1T-lfF" id="RlY-XC-tx7"/>
+                <outlet property="tableViewTop" destination="bmd-aa-5Bv" id="nut-YS-HCj"/>
+                <outlet property="tableViewContainer" destination="Z8d-1T-lfF" id="RlY-XC-tx7"/>
                 <outlet property="title" destination="bCH-mn-ecv" id="IZy-kY-ZyZ"/>
             </connections>
         </tableViewCell>

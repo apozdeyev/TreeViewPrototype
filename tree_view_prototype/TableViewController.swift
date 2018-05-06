@@ -34,17 +34,11 @@ class TableViewController: UITableViewController, DynamicCellController, Scrolli
 		tableView.beginUpdates()
 		tableView.endUpdates()
 	}
-	
 
     override func viewDidLoad() {
         super.viewDidLoad()
 		
 		tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "reuseIdentifier")
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: - Table view data source
@@ -56,7 +50,7 @@ class TableViewController: UITableViewController, DynamicCellController, Scrolli
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 3000
+        return 3
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
