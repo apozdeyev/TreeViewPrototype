@@ -8,9 +8,15 @@
 
 import UIKit
 
-// TODO: fix broken  layout at orientation changing
+
 protocol DynamicCellController {
 	func onCellHeightChanged(cell: UITableViewCell)
+}
+
+extension UIScreen {
+	public func longestDimension() -> CGFloat {
+		return max(self.bounds.width, self.bounds.height)
+	}
 }
 
 
@@ -84,7 +90,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 
 	fileprivate func invalidateTableViewHeight() {
 		tableViewContainerHeight.constant = tableView.contentSize.height
-		tableViewHeight.constant = min(tableView.contentSize.height, UIScreen.main.bounds.height)
+		tableViewHeight.constant = min(tableView.contentSize.height, UIScreen.main.longestDimension())
 		
 		layoutIfNeeded()
 	}
@@ -158,9 +164,9 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		
 		let cellPositionRelativeToRoot = scrollingEventsNotifier!.getRootScrollView().convert(CGPoint(x: 0, y: 0), from: self)
 		
-		let bottonPosition = (tableViewContainerHeight.constant - tableViewHeight.constant)
+		let bottomPosition = (tableViewContainerHeight.constant - tableViewHeight.constant)
 		let relativePosition = scrollView.contentOffset.y - cellPositionRelativeToRoot.y - tableViewContainer.frame.origin.y
-		let newTableViewTop = max(0, min(bottonPosition, relativePosition))
+		let newTableViewTop = max(0, min(bottomPosition, relativePosition))
 		
 //		if  (depth == 0 && indexPath?.row == 1) {
 //			print("BEGIN")
