@@ -63,6 +63,7 @@ class TableViewController: UITableViewController, DynamicCellController, Scrolli
 		cell.tableView.tag = indexPath.row
 		cell.scrollingEventsNotifier = self
 		cell.indexPath = indexPath
+		cell.restoreRowCollapsedState()
 		addListener(listener: cell)
 		
         // Configure the cell...

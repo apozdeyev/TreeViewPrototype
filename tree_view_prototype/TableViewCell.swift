@@ -8,6 +8,10 @@
 
 import UIKit
 
+struct RowPointer: Hashable {
+	let depth: Int
+	let index: Int
+}
 
 protocol DynamicCellController {
 	func onCellHeightChanged(cell: UITableViewCell)
@@ -21,13 +25,14 @@ extension UIScreen {
 
 
 class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellController,  UIScrollViewDelegate {
-	
+
 	public var scrollingEventsNotifier: ScrollingEventsNotifier?  =  nil
 	public var parentTableView: UITableView?
 	public var dynamicCellController: DynamicCellController?
 	public var indexPath: IndexPath?
 	
 	static var instancesCount = 0
+	static var collapsedRows: [RowPointer: Bool] = [:]
 	
 	@IBOutlet var tableViewContainerHeight: NSLayoutConstraint!
 	@IBOutlet var tableViewHeight: NSLayoutConstraint!
@@ -78,9 +83,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	public override func prepareForReuse() {
 		super.prepareForReuse()
 		
-		// TODO:? with a lot items cells are reused incorrectly at top level.
-		
-		//		print("prepareForReuse")
+		// print("prepareForReuse")
 	}
 	
 	fileprivate func incrementAndShowInstancesCount() {
@@ -116,9 +119,24 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	
 	@IBAction func onBtn(_ sender: Any) {
 		collapsed = !collapsed
+		updateRowCollapsedState()
 	}
 
 	// MARK: DynamicCellController
+
+	fileprivate func updateRowCollapsedState() {
+		let rowPointer = RowPointer(depth: depth, index: indexPath!.row)
+		TableViewCell.collapsedRows[rowPointer] = collapsed
+	}
+
+	public func restoreRowCollapsedState() {
+		let rowPointer = RowPointer(depth: depth, index: indexPath!.row)
+		let newCollapsedValue = TableViewCell.collapsedRows[rowPointer] ?? true
+		if newCollapsedValue != collapsed {
+			collapsed = newCollapsedValue
+			print("restored state(\(rowPointer): \(newCollapsedValue)")
+		}
+	}
 
 	func onCellHeightChanged(cell: UITableViewCell) {
 		tableView.beginUpdates()
@@ -152,6 +170,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		cell.tableView.tag = self.tag * 10 + indexPath.row
 		cell.scrollingEventsNotifier = scrollingEventsNotifier
 		cell.indexPath = indexPath
+		cell.restoreRowCollapsedState()
 		scrollingEventsNotifier!.addListener(listener: cell)
 		
 		return cell
