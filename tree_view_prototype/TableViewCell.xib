@@ -18,10 +18,10 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="KwG-Cg-A1r">
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="KwG-Cg-A1r" userLabel="MainStackView">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lVo-2a-cMT">
+                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lVo-2a-cMT" userLabel="ContentStackView">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bCH-mn-ecv">
@@ -47,7 +47,7 @@
                             </stackView>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z8d-1T-lfF">
                                 <rect key="frame" x="0.0" y="43.5" width="320" height="0.0"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.31372549020000001" green="0.72549019609999998" blue="0.97647058819999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="4KZ-KI-O1V"/>
                                 </constraints>
@@ -71,18 +71,20 @@
                     <constraint firstItem="t83-f5-a5u" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="AdD-pt-XkE"/>
                     <constraint firstItem="KwG-Cg-A1r" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="EvR-FM-VhY"/>
                     <constraint firstItem="KwG-Cg-A1r" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="FTc-H0-Ygr"/>
+                    <constraint firstItem="t83-f5-a5u" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="43" id="IPG-Mt-alz"/>
                     <constraint firstAttribute="bottom" secondItem="KwG-Cg-A1r" secondAttribute="bottom" priority="999" id="V7j-qG-NA2"/>
                     <constraint firstAttribute="trailing" secondItem="t83-f5-a5u" secondAttribute="trailing" id="aeU-34-Pgg"/>
-                    <constraint firstItem="lVo-2a-cMT" firstAttribute="bottom" secondItem="t83-f5-a5u" secondAttribute="top" id="bmd-aa-5Bv"/>
                 </constraints>
             </tableViewCellContentView>
+            <color key="backgroundColor" red="1" green="1" blue="0.30196078430000001" alpha="1" colorSpace="calibratedRGB"/>
             <connections>
                 <outlet property="button" destination="0Eh-lD-O2c" id="REv-5n-mZF"/>
+                <outlet property="contentStackView" destination="lVo-2a-cMT" id="h4d-Yw-yFs"/>
                 <outlet property="tableView" destination="t83-f5-a5u" id="BA7-Sc-U6X"/>
+                <outlet property="tableViewContainer" destination="Z8d-1T-lfF" id="RlY-XC-tx7"/>
                 <outlet property="tableViewContainerHeight" destination="4KZ-KI-O1V" id="MHT-Ev-uRJ"/>
                 <outlet property="tableViewHeight" destination="wOL-Kv-DSG" id="6jA-8B-P4W"/>
-                <outlet property="tableViewTop" destination="bmd-aa-5Bv" id="nut-YS-HCj"/>
-                <outlet property="tableViewContainer" destination="Z8d-1T-lfF" id="RlY-XC-tx7"/>
+                <outlet property="tableViewTop" destination="IPG-Mt-alz" id="R5u-gm-NGg"/>
                 <outlet property="title" destination="bCH-mn-ecv" id="IZy-kY-ZyZ"/>
             </connections>
         </tableViewCell>

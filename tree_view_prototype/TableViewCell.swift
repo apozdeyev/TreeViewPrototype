@@ -8,6 +8,8 @@
 
 import UIKit
 
+// TODO: analyze performance at scrolling with huge amount and  near expanded rows at second and third level.
+
 struct RowPointer: Hashable {
 	let depth: Int
 	let index: Int
@@ -41,6 +43,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	@IBOutlet var title: UILabel!
 	@IBOutlet var tableView: UITableView!
 	@IBOutlet var button: UIButton!
+	@IBOutlet var contentStackView: UIStackView!
 	
 	public var depth: Int = 0 {
 		didSet {
@@ -185,25 +188,27 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		
 		let bottomPosition = (tableViewContainerHeight.constant - tableViewHeight.constant)
 		let relativePosition = scrollView.contentOffset.y - cellPositionRelativeToRoot.y - tableViewContainer.frame.origin.y
-		let newTableViewTop = max(0, min(bottomPosition, relativePosition))
+		let newTableOffset = max(0, min(bottomPosition, relativePosition))
+		let newTableViewTop = newTableOffset + contentStackView.bounds.height
 		
-//		if  (depth == 0 && indexPath?.row == 1) {
-//			print("BEGIN")
-//
-//			print("root height: \(scrollingEventsNotifier!.getRootScrollView().bounds.height)")
-//			print("tableViewContainerHeight: \(tableViewContainerHeight.constant)")
-//			print("tableViewHeight: \(tableViewHeight.constant)")
-//			print("tablewViewContainer.y: \(tablewViewContainer.frame.origin.y)")
-//			print("scrollView.contentOffset: \(scrollView.contentOffset.y)")
-//			print("cellPositionRelativeToRoot.y: \(cellPositionRelativeToRoot.y)")
-//			print("bottonPosition: \(bottonPosition)")
-//			print("relativePosition: \(relativePosition)")
-//
-//			print("END")
-//		}
+		if  (depth == 0 && indexPath?.row == 14) {
+			print("BEGIN")
+
+			print("root height: \(scrollingEventsNotifier!.getRootScrollView().bounds.height)")
+			print("tableViewContainerHeight: \(tableViewContainerHeight.constant)")
+			print("tableViewHeight: \(tableViewHeight.constant)")
+			print("tablewViewContainer.y: \(tableViewContainer.frame.origin.y)")
+			print("scrollView.contentOffset: \(scrollView.contentOffset.y)")
+			print("cellPositionRelativeToRoot.y: \(cellPositionRelativeToRoot.y)")
+			print("bottomPosition: \(bottomPosition)")
+			print("relativePosition: \(relativePosition)")
+			print("newTableViewTop: \(newTableViewTop)")
+
+			print("END")
+		}
 		
 		tableViewTop.constant = newTableViewTop
-		tableView.contentOffset = CGPoint(x: 0, y: newTableViewTop)
+		tableView.contentOffset = CGPoint(x: 0, y: newTableOffset)
 	}
 }
 
