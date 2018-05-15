@@ -8,8 +8,6 @@
 
 import UIKit
 
-// TODO: analyze performance at scrolling with huge amount and  near expanded rows at second and third level.
-
 struct RowPointer: Hashable {
 	let depth: Int
 	let index: Int
@@ -34,7 +32,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	public var indexPath: IndexPath?
 	
 	static var instancesCount = 0
-	static var collapsedRows: [RowPointer: Bool] = [:]
+	static var collapsedRows: [IndexPath: Bool] = [:]
 	
 	@IBOutlet var tableViewContainerHeight: NSLayoutConstraint!
 	@IBOutlet var tableViewHeight: NSLayoutConstraint!
@@ -53,6 +51,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	public var num: Int = 0 {
 		didSet {
 			updateButtonTitle()
+//			print("reloadData \(indexPath!)")
 			tableView.reloadData()
 		}
 	}
@@ -60,7 +59,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	fileprivate var collapsed: Bool = true {
 		didSet {
 			invalidateTableViewContainerVisibility()
-			invalidateTableViewHeight()
+			invalidateTableViewHeightAndLayout()
 			updateButtonTitle()
 			updateParentContainer()
 		}
@@ -91,13 +90,16 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	
 	fileprivate func incrementAndShowInstancesCount() {
 		TableViewCell.instancesCount += 1
-		print("instancesCount: \(TableViewCell.instancesCount)")
+//		print("instancesCount: \(TableViewCell.instancesCount)")
 	}
 
 	fileprivate func invalidateTableViewHeight() {
 		tableViewContainerHeight.constant = tableView.contentSize.height
 		tableViewHeight.constant = min(tableView.contentSize.height, UIScreen.main.longestDimension())
-		
+	}
+	
+	fileprivate func invalidateTableViewHeightAndLayout() {
+		invalidateTableViewHeight()
 		layoutIfNeeded()
 	}
 	
@@ -128,16 +130,19 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	// MARK: DynamicCellController
 
 	fileprivate func updateRowCollapsedState() {
-		let rowPointer = RowPointer(depth: depth, index: indexPath!.row)
-		TableViewCell.collapsedRows[rowPointer] = collapsed
+		TableViewCell.collapsedRows[indexPath!] = collapsed
+//		print("save state: \(indexPath!) - \(collapsed)")
 	}
 
 	public func restoreRowCollapsedState() {
-		let rowPointer = RowPointer(depth: depth, index: indexPath!.row)
-		let newCollapsedValue = TableViewCell.collapsedRows[rowPointer] ?? true
+		let newCollapsedValue = TableViewCell.collapsedRows[indexPath!] ?? true
 		if newCollapsedValue != collapsed {
 			collapsed = newCollapsedValue
-			print("restored state(\(rowPointer): \(newCollapsedValue)")
+			
+			invalidateTableViewHeight()
+//			updateParentContainer()
+			
+//			print("restore state\(indexPath!): \(newCollapsedValue), height: \(frame.height), table content height: \(tableView.contentSize.height)")
 		}
 	}
 
@@ -145,7 +150,7 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		tableView.beginUpdates()
 		tableView.endUpdates()
 
-		invalidateTableViewHeight()
+		invalidateTableViewHeightAndLayout()
 		updateParentContainer()
 	}
 
@@ -161,10 +166,11 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		
-//		print("cellForRowAt: \(indexPath.row)");
+//		print("cellForRowAt \(self.indexPath!)")
 		
 		let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! TableViewCell
 		
+		cell.indexPath = self.indexPath!.appending(indexPath.row)
 		cell.num = (num % 2 == 0 && depth < 20) ? 10 : 0
 		cell.title.text = "\(title.text!)_\(indexPath.row)"
 		cell.dynamicCellController = self
@@ -172,13 +178,12 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		cell.parentTableView = tableView
 		cell.tableView.tag = self.tag * 10 + indexPath.row
 		cell.scrollingEventsNotifier = scrollingEventsNotifier
-		cell.indexPath = indexPath
 		cell.restoreRowCollapsedState()
 		scrollingEventsNotifier!.addListener(listener: cell)
 		
 		return cell
 	}
-
+	
 	// MARK: UIScrollViewDelegate
 	public func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		
@@ -191,21 +196,21 @@ class TableViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControll
 		let newTableOffset = max(0, min(bottomPosition, relativePosition))
 		let newTableViewTop = newTableOffset + contentStackView.bounds.height
 		
-		if  (depth == 0 && indexPath?.row == 14) {
-			print("BEGIN")
-
-			print("root height: \(scrollingEventsNotifier!.getRootScrollView().bounds.height)")
-			print("tableViewContainerHeight: \(tableViewContainerHeight.constant)")
-			print("tableViewHeight: \(tableViewHeight.constant)")
-			print("tablewViewContainer.y: \(tableViewContainer.frame.origin.y)")
-			print("scrollView.contentOffset: \(scrollView.contentOffset.y)")
-			print("cellPositionRelativeToRoot.y: \(cellPositionRelativeToRoot.y)")
-			print("bottomPosition: \(bottomPosition)")
-			print("relativePosition: \(relativePosition)")
-			print("newTableViewTop: \(newTableViewTop)")
-
-			print("END")
-		}
+//		if  (depth == 0 && indexPath?.row == 14) {
+//			print("BEGIN")
+//
+//			print("root height: \(scrollingEventsNotifier!.getRootScrollView().bounds.height)")
+//			print("tableViewContainerHeight: \(tableViewContainerHeight.constant)")
+//			print("tableViewHeight: \(tableViewHeight.constant)")
+//			print("tablewViewContainer.y: \(tableViewContainer.frame.origin.y)")
+//			print("scrollView.contentOffset: \(scrollView.contentOffset.y)")
+//			print("cellPositionRelativeToRoot.y: \(cellPositionRelativeToRoot.y)")
+//			print("bottomPosition: \(bottomPosition)")
+//			print("relativePosition: \(relativePosition)")
+//			print("newTableViewTop: \(newTableViewTop)")
+//
+//			print("END")
+//		}
 		
 		tableViewTop.constant = newTableViewTop
 		tableView.contentOffset = CGPoint(x: 0, y: newTableOffset)

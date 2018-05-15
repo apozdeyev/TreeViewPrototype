@@ -50,19 +50,22 @@ class TableViewController: UITableViewController, DynamicCellController, Scrolli
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 300
+        return 3000
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		
+//		print("cellForRowAt [\(indexPath.row)]")
+		
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! TableViewCell
 
+		cell.indexPath = IndexPath(index: indexPath.row)
 		cell.num = indexPath.row
 		cell.title.text = "\(indexPath.row)"
 		cell.dynamicCellController = self
 		cell.parentTableView = tableView
 		cell.tableView.tag = indexPath.row
 		cell.scrollingEventsNotifier = self
-		cell.indexPath = indexPath
 		cell.restoreRowCollapsedState()
 		addListener(listener: cell)
 		
@@ -70,7 +73,7 @@ class TableViewController: UITableViewController, DynamicCellController, Scrolli
 
         return cell
     }
-	
+
 	public override func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		scrollingEventsListeners.forEach {		$0.scrollViewDidScroll!(scrollView)
 		}
