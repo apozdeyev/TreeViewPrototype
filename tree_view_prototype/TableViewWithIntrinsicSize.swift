@@ -19,9 +19,9 @@ class TableViewWithIntrinsicSize: UITableView {
 	public override func layoutSubviews() {
 		var isContentSizeUpdated = false
 		if previousContentSize != contentSize {
+//			print("invalidateIntrinsicContentSize: \(previousContentSize)->\(contentSize)")
 			invalidateIntrinsicContentSize()
 			previousContentSize = contentSize
-//			print("invalidateIntrinsicContentSize")
 			isContentSizeUpdated = true
 		}
 		

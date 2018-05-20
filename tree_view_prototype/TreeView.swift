@@ -15,6 +15,8 @@ protocol ScrollingEventsNotifier {
 	func  getRootScrollView() -> UIScrollView
 }
 
+// Limitations:
+// 1. only autoresized estimated height of tree cell is supported.
 class TreeView: UITableView, UITableViewDataSource, DynamicCellController, ScrollingEventsNotifier {
 	
 	fileprivate var itemsDataSource: ITableDataSource? {
@@ -76,7 +78,7 @@ class TreeView: UITableView, UITableViewDataSource, DynamicCellController, Scrol
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		
-		//		print("cellForRowAt [\(indexPath.row)]")
+//				print("cellForRowAt [\(indexPath.row)]")
 		
 		let cell = tableView.dequeueReusableCell(withIdentifier: "TreeViewCell", for: indexPath) as! TreeViewCell
 		

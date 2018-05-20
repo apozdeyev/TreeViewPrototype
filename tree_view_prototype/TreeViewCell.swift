@@ -35,7 +35,8 @@ extension UIScreen {
 	}
 }
 
-
+// Limitations:
+// 1. only autoresized estimated height of content cell is supported.
 class TreeViewCell: UITableViewCell, UITableViewDataSource, DynamicCellController,  UIScrollViewDelegate, ContentCellDelegate, IntrinsicSizeObserver {
 	
 	public var scrollingEventsNotifier: ScrollingEventsNotifier?  =  nil
@@ -78,24 +79,23 @@ class TreeViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControlle
 		// print("prepareForReuse")
 	}
 	
-	fileprivate var itemsDataSource: ITableDataSource? {
-		didSet {
-			do {
-				try itemsDataSource?.performFetch()
-			} catch {
-				print("performFetch failed")
-			}
-			
-			tableViewForSubItems.reloadData()
-		}
-	}
+//	fileprivate var itemsDataSource: ITableDataSource? {
+//		didSet {
+//			do {
+//				try itemsDataSource?.performFetch()
+//			} catch {
+//				print("performFetch failed")
+//			}
+//
+//			tableViewForSubItems.reloadData()
+//		}
+//	}
+	
+	fileprivate var itemsDataSource: ITableDataSource?
 	
 	public var treeDataSource: ITreeDataSource? {
 		didSet {
 			itemsDataSource = treeDataSource?.dataSource(forItemsPath: itemsPath)
-			
-			updateButtonTitle()
-			tableViewForSubItems.reloadData()
 			tableViewForContentCell.reloadData()
 		}
 	}
@@ -129,11 +129,27 @@ class TreeViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControlle
 	
 	fileprivate var collapsed: Bool = true {
 		didSet {
-			invalidateTableViewContainerVisibility()
-			invalidateTableViewHeightAndLayout()
+			invalidateSubItems()
+			invalidateTableForSubItemsHeightAndLayout()
 			updateButtonTitle()
 			updateParentContainer()
 		}
+	}
+	
+	fileprivate func invalidateSubItems() {
+		let tableCollapsed = (collapsed || subItemsCount() == 0)
+		if tableCollapsed {
+			tableViewForSubItems.dataSource = nil
+		} else {
+			tableViewForSubItems.dataSource = self
+			// TODO: refactor
+			do {
+				try itemsDataSource?.performFetch()
+			} catch {
+				print("performFetch failed")
+			}		}
+		
+		tableViewForSubItems.reloadData()
 	}
 	
 	fileprivate func incrementAndShowInstancesCount() {
@@ -146,20 +162,18 @@ class TreeViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControlle
 		tableViewForSubItemsHeight.constant = min(tableViewForSubItems.contentSize.height, UIScreen.main.longestDimension())
 	}
 	
-	fileprivate func invalidateTableViewHeightAndLayout() {
+	fileprivate func invalidateTableForSubItemsHeightAndLayout() {
 		invalidateTableViewHeight()
-		layoutIfNeeded()
+		// TODO: cell height is not updated.
+//		layoutIfNeeded()
+		setNeedsLayout()
+//		layoutIfNeeded()
 	}
 	
 	fileprivate func updateParentContainer() {
 		if (dynamicCellController != nil) {
 			dynamicCellController?.onCellHeightChanged(cell: self)
 		}
-	}
-	
-	fileprivate func invalidateTableViewContainerVisibility() {
-		let tableCollapsed = (collapsed || subItemsCount() == 0)
-		tableViewForSubItemsContainer.isHidden = tableCollapsed
 	}
 
 	fileprivate func updateButtonTitle() {
@@ -185,10 +199,15 @@ class TreeViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControlle
 	}
 
 	func onCellHeightChanged(cell: UITableViewCell) {
-		tableViewForSubItems.beginUpdates()
-		tableViewForSubItems.endUpdates()
-
-		invalidateTableViewHeightAndLayout()
+		let tableCollapsed = (collapsed || subItemsCount() == 0)
+		
+		if !tableCollapsed {
+			tableViewForSubItems.beginUpdates()
+			tableViewForSubItems.endUpdates()
+			
+			invalidateTableForSubItemsHeightAndLayout()
+		}
+		
 		updateParentContainer()
 	}
 
@@ -215,6 +234,9 @@ class TreeViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControlle
 	}
 	
 	func cellForSubItem(_ indexPath: IndexPath) -> UITableViewCell {
+		
+//		print("cellForSubItem \(itemsPath!.concatString()) - \(indexPath.row)")
+		
 		let cell = tableViewForSubItems.dequeueReusableCell(withIdentifier: "TreeViewCell", for: indexPath) as! TreeViewCell
 		
 		let cellItem = itemsDataSource!.object(at: UInt(indexPath.row))!
@@ -230,7 +252,7 @@ class TreeViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControlle
 	}
 	
 	func cellForContent() -> UITableViewCell {
-//		print("cellForContent \(itemsPath!)")
+//		print("cellForContent \(itemsPath!.concatString())")
 		
 		let cell = tableViewForContentCell.dequeueReusableCell(withIdentifier: "ContentCell", for: IndexPath(row: 0, section: 0)) as! ContentCell
 		
@@ -269,8 +291,9 @@ class TreeViewCell: UITableViewCell, UITableViewDataSource, DynamicCellControlle
 	}
 	
 	func onIntrinsicSizeChanged(view: UIView) {
-		updateTableViewForSubItemsPosition()
+//		print("onIntrinsicSizeChanged: \(itemsPath!.concatString())")
 		
+		updateTableViewForSubItemsPosition()
 		onCellHeightChanged(cell: self)
 	}
 }

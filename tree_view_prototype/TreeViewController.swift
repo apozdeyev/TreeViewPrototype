@@ -23,9 +23,10 @@ class TreeViewController: UIViewController, ITreeDataSource {
 	
 	func dataSource(forItemsPath path: Array<Any>) -> ITableDataSource! {
 		if path.count == 0 {
-			return ArrayDataSource(for: Array(1...100))
-		} else if path.count < 2 {
+			return ArrayDataSource(for: Array(1...50))
+		} else if path.count < 4 {
 			return ArrayDataSource(for: Array(1...5))
+//			return ArrayDataSource(for: [])
 		} else {
 			return ArrayDataSource(for: [])
 		}
